@@ -18,9 +18,16 @@ class _DeckEditPageState extends ConsumerState<DeckEditPage> {
   final _formKey = GlobalKey<FormState>();
   final _nameCtl = TextEditingController();
   bool _saving = false;
-  bool _initialized = false;
 
   bool get _isEditing => widget.deckId != null;
+
+  @override
+  void initState() {
+    super.initState();
+    if (_isEditing) {
+      Future.microtask(_loadExistingName);
+    }
+  }
 
   @override
   void dispose() {
@@ -28,66 +35,59 @@ class _DeckEditPageState extends ConsumerState<DeckEditPage> {
     super.dispose();
   }
 
-  Future<void> _loadIfEditing() async {
-    if (_initialized || !_isEditing) {
-      _initialized = true;
-      return;
-    }
+  Future<void> _loadExistingName() async {
     final deck = await ref.read(deckByIdProvider(widget.deckId!).future);
-    if (deck != null && mounted) {
-      _nameCtl.text = deck.name;
-    }
-    _initialized = true;
+    if (!mounted || deck == null) return;
+    _nameCtl.value = TextEditingValue(
+      text: deck.name,
+      selection: TextSelection.collapsed(offset: deck.name.length),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<void>(
-      future: _loadIfEditing(),
-      builder: (context, snap) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(_isEditing ? '编辑牌组' : '新建牌组'),
-          ),
-          body: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Form(
-              key: _formKey,
-              child: Column(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_isEditing ? '编辑牌组' : '新建牌组'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _nameCtl,
+                autofocus: !_isEditing,
+                decoration: const InputDecoration(
+                  labelText: '牌组名称',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? '请输入名称' : null,
+              ),
+              const SizedBox(height: 24),
+              Row(
                 children: [
-                  TextFormField(
-                    controller: _nameCtl,
-                    decoration: const InputDecoration(
-                      labelText: '牌组名称',
-                      border: OutlineInputBorder(),
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: _saving ? null : () => context.pop(),
+                      child: const Text('取消'),
                     ),
-                    validator: (v) =>
-                        (v == null || v.trim().isEmpty) ? '请输入名称' : null,
                   ),
-                  const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: _saving ? null : () => context.pop(),
-                          child: const Text('取消'),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: FilledButton(
-                          onPressed: _saving ? null : _onSave,
-                          child: Text(_saving ? '保存中…' : '保存'),
-                        ),
-                      ),
-                    ],
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: _saving ? null : _onSave,
+                      child: Text(_saving ? '保存中…' : '保存'),
+                    ),
                   ),
                 ],
               ),
-            ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -98,12 +98,19 @@ class _DeckEditPageState extends ConsumerState<DeckEditPage> {
     final svc = ref.read(deckServiceProvider);
     final name = _nameCtl.text.trim();
 
-    if (_isEditing) {
-      await svc.rename(widget.deckId!, name);
-    } else {
-      await svc.create(name);
+    try {
+      if (_isEditing) {
+        await svc.rename(widget.deckId!, name);
+      } else {
+        await svc.create(name);
+      }
+      if (mounted) context.pop();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('保存失败: $e')),
+      );
+      setState(() => _saving = false);
     }
-
-    if (mounted) context.pop();
   }
 }
