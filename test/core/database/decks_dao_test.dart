@@ -91,4 +91,17 @@ void main() {
     expect(byId[emptyId], 0);
     expect(byId[fullId], 2);
   });
+
+  test('watchById emits updates', () async {
+    final id = await insertDeck('A');
+    final stream = dao.watchById(id);
+    expect(await stream.first, isA<Deck>().having((d) => d.name, 'name', 'A'));
+
+    await dao.updateDeck(id, DecksCompanion(name: const Value('B')));
+    // 等下一帧让 stream 推新值
+    final updated = await stream.firstWhere(
+      (d) => d != null && d.name == 'B',
+    );
+    expect(updated, isNotNull);
+  });
 }

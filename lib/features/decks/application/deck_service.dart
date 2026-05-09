@@ -12,11 +12,10 @@ final allDecksWithCountProvider =
   return db.decksDao.watchAllWithCount();
 });
 
-/// 单个牌组。
 final deckByIdProvider =
-    FutureProvider.autoDispose.family<Deck?, int>((ref, id) {
+    StreamProvider.autoDispose.family<Deck?, int>((ref, id) {
   final db = ref.watch(databaseProvider);
-  return db.decksDao.getById(id);
+  return db.decksDao.watchById(id);
 });
 
 /// 操作类（mutation）：直接调用 DAO。

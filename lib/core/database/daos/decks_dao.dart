@@ -22,6 +22,9 @@ class DecksDao extends DatabaseAccessor<AppDatabase> with _$DecksDaoMixin {
   Future<Deck?> getById(int id) =>
       (select(decks)..where((d) => d.id.equals(id))).getSingleOrNull();
 
+  Stream<Deck?> watchById(int id) =>
+      (select(decks)..where((d) => d.id.equals(id))).watchSingleOrNull();
+
   Future<int> insertDeck(DecksCompanion entry) => into(decks).insert(entry);
 
   Future<bool> updateDeck(int id, DecksCompanion entry) async {
