@@ -52,4 +52,43 @@ void main() {
     expect(list, hasLength(1));
     expect(list.first.cardCount, 0);
   });
+
+  test('watchAllWithCount 正确统计每组卡片数', () async {
+    final emptyId = await insertDeck('Empty');
+    final fullId = await insertDeck('Full');
+    final now = DateTime.now().millisecondsSinceEpoch;
+
+    final noteId = await db.notesDao.insertNote(
+      NotesCompanion.insert(
+        noteTypeId: 1,
+        fields: '{"正面":"q","反面":"a"}',
+        createdAt: now,
+        updatedAt: now,
+      ),
+    );
+
+    await db.cardsDao.insertCard(
+      CardsCompanion.insert(
+        noteId: noteId,
+        deckId: fullId,
+        due: now,
+        createdAt: now,
+        updatedAt: now,
+      ),
+    );
+    await db.cardsDao.insertCard(
+      CardsCompanion.insert(
+        noteId: noteId,
+        deckId: fullId,
+        due: now,
+        createdAt: now,
+        updatedAt: now,
+      ),
+    );
+
+    final list = await dao.watchAllWithCount().first;
+    final byId = {for (final e in list) e.deck.id: e.cardCount};
+    expect(byId[emptyId], 0);
+    expect(byId[fullId], 2);
+  });
 }
