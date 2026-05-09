@@ -5,6 +5,7 @@ import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import 'daos/note_types_dao.dart';
 import 'tables/cards_table.dart';
 import 'tables/decks_table.dart';
 import 'tables/media_table.dart';
@@ -24,6 +25,9 @@ part 'database.g.dart';
     Reviews,
     Media,
     Settings,
+  ],
+  daos: [
+    NoteTypesDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
