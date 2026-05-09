@@ -160,10 +160,10 @@ dependencies:
   path: ^1.9.0
 
   # FSRS 算法
-  dart_fsrs: ^2.0.1
+  fsrs: ^2.0.1
 
-  # Markdown 渲染
-  flutter_markdown: ^0.7.3
+  # Markdown 渲染（flutter_markdown 已废弃，用 flutter_markdown_plus 替代）
+  flutter_markdown_plus: ^1.0.7
 
   # TTS
   flutter_tts: ^4.0.2

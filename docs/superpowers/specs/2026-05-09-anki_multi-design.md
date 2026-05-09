@@ -66,8 +66,8 @@
 | 状态管理 | **Riverpod** | 当前 Flutter 社区最佳实践 |
 | 路由 | **go_router** | 官方推荐 |
 | 本地数据库 | **drift**（基于 SQLite） | 类型安全、跨平台、迁移支持好 |
-| 算法 | **dart_fsrs** | FSRS 官方 Dart 移植 |
-| Markdown | **flutter_markdown** | 官方包 |
+| 算法 | **fsrs** | FSRS 官方 Dart 移植（pub.dev 包名 `fsrs`） |
+| Markdown | **flutter_markdown_plus** | flutter_markdown 已废弃，社区接手维护 |
 | TTS | **flutter_tts** | 跨平台系统 TTS 桥接 |
 | UI 设计 | **Material 3** | Flutter 默认，跨平台一致 |
 | License | **AGPL v3** | 阻止任何 fork 做闭源/SaaS |
@@ -98,7 +98,7 @@
 │  Infrastructure 层                        │
 │  ─ LocalDB (drift + SQLite)              │
 │  ─ FileStorage (媒体文件)                │
-│  ─ dart_fsrs                             │
+│  ─ fsrs                                  │
 │  ─ flutter_tts                           │
 └─────────────────────────────────────────┘
 ```
@@ -148,7 +148,7 @@ ReviewService.getDueCards(deckId)
 用户点击 4 评分按钮（Again/Hard/Good/Easy）
   ↓
 ReviewService.applyReview(card, rating)
-  → dart_fsrs.next(card.fsrsState, rating)
+  → fsrs.next(card.fsrsState, rating)
   → 更新 cards 表（新 due/stability/difficulty/...）
   → 写一条 reviews 日志（永不删）
   ↓
@@ -368,7 +368,7 @@ solo + 5h/周 限制下，原则：**核心逻辑必测，UI 可不测**。
 - Anki 官方源码：https://github.com/ankitects/anki
 - AnkiDroid 源码：https://github.com/ankidroid/Anki-Android
 - FSRS 算法：https://github.com/open-spaced-repetition
-- dart_fsrs：https://github.com/open-spaced-repetition/dart-fsrs
+- fsrs (Dart 移植)：https://pub.dev/packages/fsrs · 源码 https://github.com/open-spaced-repetition/dart-fsrs
 - drift 文档：https://drift.simonbinder.eu/
 - Riverpod：https://riverpod.dev/
 - AGPL v3 全文：https://www.gnu.org/licenses/agpl-3.0.html
