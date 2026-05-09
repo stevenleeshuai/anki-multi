@@ -10,8 +10,8 @@ import '../../application/card_service.dart';
 class CardEditPage extends ConsumerStatefulWidget {
   const CardEditPage({super.key, this.deckId, this.editingCardId})
       : assert(
-          deckId != null || editingCardId != null,
-          'deckId 或 editingCardId 至少需要一个',
+          (deckId != null) != (editingCardId != null),
+          '必须只提供 deckId 或 editingCardId 其中一个',
         );
 
   final int? deckId;
