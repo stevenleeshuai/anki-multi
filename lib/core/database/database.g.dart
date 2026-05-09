@@ -3346,6 +3346,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $MediaTable media = $MediaTable(this);
   late final $SettingsTable settings = $SettingsTable(this);
   late final NoteTypesDao noteTypesDao = NoteTypesDao(this as AppDatabase);
+  late final DecksDao decksDao = DecksDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
