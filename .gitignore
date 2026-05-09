@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+**/.DS_Store
+# Flutter（先占位，flutter create 后会被覆盖完善）
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+.pub-cache/
+.pub/
+# IDE
+.idea/
+.vscode/
+*.iml
