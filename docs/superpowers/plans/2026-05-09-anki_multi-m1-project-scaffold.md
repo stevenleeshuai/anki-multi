@@ -613,10 +613,10 @@ git commit -m "feat(db): add AppDatabase wrapper with code generation"
 `test/core/database/database_test.dart`：
 
 ```dart
-import 'package:drift/drift.dart';
+import 'package:anki_multi/core/database/database.dart';
+import 'package:drift/drift.dart' hide isNull; // hide isNull 避免与 matcher 冲突
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:anki_multi/core/database/database.dart';
 
 void main() {
   late AppDatabase db;
