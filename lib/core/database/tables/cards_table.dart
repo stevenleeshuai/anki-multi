@@ -14,6 +14,7 @@ class Cards extends Table {
   IntColumn get reps => integer().withDefault(const Constant(0))();
   IntColumn get lapses => integer().withDefault(const Constant(0))();
   IntColumn get state => integer().withDefault(const Constant(0))();
+  IntColumn get learningStep => integer().nullable()();
   IntColumn get lastReview => integer().nullable()();
 
   IntColumn get createdAt => integer()();

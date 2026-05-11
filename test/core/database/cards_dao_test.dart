@@ -1,4 +1,5 @@
 import 'package:anki_multi/core/database/database.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -66,5 +67,29 @@ void main() {
 
     final removed = await db.cardsDao.deleteCardsByNote(noteId);
     expect(removed, 2);
+  });
+
+  test('Learning 阶段 due 在未来几分钟内仍能取出（Again 后会话不空）', () async {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final noteId = await seedNote();
+    final dueSoon = now + 60000;
+
+    await db.cardsDao.insertCard(
+      CardsCompanion.insert(
+        noteId: noteId,
+        deckId: 9,
+        due: dueSoon,
+        createdAt: now,
+        updatedAt: now,
+        state: const Value(1),
+      ),
+    );
+
+    final next = await db.cardsDao.getNextDueWithNote(
+      deckId: 9,
+      nowMillis: now,
+    );
+    expect(next, isNotNull);
+    expect(next!.card.state, 1);
   });
 }

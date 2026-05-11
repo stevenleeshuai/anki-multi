@@ -9,6 +9,7 @@ import 'daos/cards_dao.dart';
 import 'daos/decks_dao.dart';
 import 'daos/note_types_dao.dart';
 import 'daos/notes_dao.dart';
+import 'daos/reviews_dao.dart';
 import 'tables/cards_table.dart';
 import 'tables/decks_table.dart';
 import 'tables/media_table.dart';
@@ -34,6 +35,7 @@ part 'database.g.dart';
     DecksDao,
     NotesDao,
     CardsDao,
+    ReviewsDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -42,7 +44,19 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onCreate: (Migrator m) async {
+          await m.createAll();
+        },
+        onUpgrade: (Migrator m, int from, int to) async {
+          if (from < 2) {
+            await m.addColumn(cards, cards.learningStep);
+          }
+        },
+      );
 }
 
 LazyDatabase _openConnection() {

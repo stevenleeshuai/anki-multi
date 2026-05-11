@@ -1298,6 +1298,17 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, Card> {
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _learningStepMeta = const VerificationMeta(
+    'learningStep',
+  );
+  @override
+  late final GeneratedColumn<int> learningStep = GeneratedColumn<int>(
+    'learning_step',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _lastReviewMeta = const VerificationMeta(
     'lastReview',
   );
@@ -1345,6 +1356,7 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, Card> {
     reps,
     lapses,
     state,
+    learningStep,
     lastReview,
     createdAt,
     updatedAt,
@@ -1445,6 +1457,15 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, Card> {
         state.isAcceptableOrUnknown(data['state']!, _stateMeta),
       );
     }
+    if (data.containsKey('learning_step')) {
+      context.handle(
+        _learningStepMeta,
+        learningStep.isAcceptableOrUnknown(
+          data['learning_step']!,
+          _learningStepMeta,
+        ),
+      );
+    }
     if (data.containsKey('last_review')) {
       context.handle(
         _lastReviewMeta,
@@ -1536,6 +1557,10 @@ class $CardsTable extends Cards with TableInfo<$CardsTable, Card> {
             DriftSqlType.int,
             data['${effectivePrefix}state'],
           )!,
+      learningStep: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}learning_step'],
+      ),
       lastReview: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}last_review'],
@@ -1572,6 +1597,7 @@ class Card extends DataClass implements Insertable<Card> {
   final int reps;
   final int lapses;
   final int state;
+  final int? learningStep;
   final int? lastReview;
   final int createdAt;
   final int updatedAt;
@@ -1588,6 +1614,7 @@ class Card extends DataClass implements Insertable<Card> {
     required this.reps,
     required this.lapses,
     required this.state,
+    this.learningStep,
     this.lastReview,
     required this.createdAt,
     required this.updatedAt,
@@ -1607,6 +1634,9 @@ class Card extends DataClass implements Insertable<Card> {
     map['reps'] = Variable<int>(reps);
     map['lapses'] = Variable<int>(lapses);
     map['state'] = Variable<int>(state);
+    if (!nullToAbsent || learningStep != null) {
+      map['learning_step'] = Variable<int>(learningStep);
+    }
     if (!nullToAbsent || lastReview != null) {
       map['last_review'] = Variable<int>(lastReview);
     }
@@ -1629,6 +1659,10 @@ class Card extends DataClass implements Insertable<Card> {
       reps: Value(reps),
       lapses: Value(lapses),
       state: Value(state),
+      learningStep:
+          learningStep == null && nullToAbsent
+              ? const Value.absent()
+              : Value(learningStep),
       lastReview:
           lastReview == null && nullToAbsent
               ? const Value.absent()
@@ -1656,6 +1690,7 @@ class Card extends DataClass implements Insertable<Card> {
       reps: serializer.fromJson<int>(json['reps']),
       lapses: serializer.fromJson<int>(json['lapses']),
       state: serializer.fromJson<int>(json['state']),
+      learningStep: serializer.fromJson<int?>(json['learningStep']),
       lastReview: serializer.fromJson<int?>(json['lastReview']),
       createdAt: serializer.fromJson<int>(json['createdAt']),
       updatedAt: serializer.fromJson<int>(json['updatedAt']),
@@ -1677,6 +1712,7 @@ class Card extends DataClass implements Insertable<Card> {
       'reps': serializer.toJson<int>(reps),
       'lapses': serializer.toJson<int>(lapses),
       'state': serializer.toJson<int>(state),
+      'learningStep': serializer.toJson<int?>(learningStep),
       'lastReview': serializer.toJson<int?>(lastReview),
       'createdAt': serializer.toJson<int>(createdAt),
       'updatedAt': serializer.toJson<int>(updatedAt),
@@ -1696,6 +1732,7 @@ class Card extends DataClass implements Insertable<Card> {
     int? reps,
     int? lapses,
     int? state,
+    Value<int?> learningStep = const Value.absent(),
     Value<int?> lastReview = const Value.absent(),
     int? createdAt,
     int? updatedAt,
@@ -1712,6 +1749,7 @@ class Card extends DataClass implements Insertable<Card> {
     reps: reps ?? this.reps,
     lapses: lapses ?? this.lapses,
     state: state ?? this.state,
+    learningStep: learningStep.present ? learningStep.value : this.learningStep,
     lastReview: lastReview.present ? lastReview.value : this.lastReview,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
@@ -1736,6 +1774,10 @@ class Card extends DataClass implements Insertable<Card> {
       reps: data.reps.present ? data.reps.value : this.reps,
       lapses: data.lapses.present ? data.lapses.value : this.lapses,
       state: data.state.present ? data.state.value : this.state,
+      learningStep:
+          data.learningStep.present
+              ? data.learningStep.value
+              : this.learningStep,
       lastReview:
           data.lastReview.present ? data.lastReview.value : this.lastReview,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
@@ -1758,6 +1800,7 @@ class Card extends DataClass implements Insertable<Card> {
           ..write('reps: $reps, ')
           ..write('lapses: $lapses, ')
           ..write('state: $state, ')
+          ..write('learningStep: $learningStep, ')
           ..write('lastReview: $lastReview, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
@@ -1779,6 +1822,7 @@ class Card extends DataClass implements Insertable<Card> {
     reps,
     lapses,
     state,
+    learningStep,
     lastReview,
     createdAt,
     updatedAt,
@@ -1799,6 +1843,7 @@ class Card extends DataClass implements Insertable<Card> {
           other.reps == this.reps &&
           other.lapses == this.lapses &&
           other.state == this.state &&
+          other.learningStep == this.learningStep &&
           other.lastReview == this.lastReview &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
@@ -1817,6 +1862,7 @@ class CardsCompanion extends UpdateCompanion<Card> {
   final Value<int> reps;
   final Value<int> lapses;
   final Value<int> state;
+  final Value<int?> learningStep;
   final Value<int?> lastReview;
   final Value<int> createdAt;
   final Value<int> updatedAt;
@@ -1833,6 +1879,7 @@ class CardsCompanion extends UpdateCompanion<Card> {
     this.reps = const Value.absent(),
     this.lapses = const Value.absent(),
     this.state = const Value.absent(),
+    this.learningStep = const Value.absent(),
     this.lastReview = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
@@ -1850,6 +1897,7 @@ class CardsCompanion extends UpdateCompanion<Card> {
     this.reps = const Value.absent(),
     this.lapses = const Value.absent(),
     this.state = const Value.absent(),
+    this.learningStep = const Value.absent(),
     this.lastReview = const Value.absent(),
     required int createdAt,
     required int updatedAt,
@@ -1871,6 +1919,7 @@ class CardsCompanion extends UpdateCompanion<Card> {
     Expression<int>? reps,
     Expression<int>? lapses,
     Expression<int>? state,
+    Expression<int>? learningStep,
     Expression<int>? lastReview,
     Expression<int>? createdAt,
     Expression<int>? updatedAt,
@@ -1888,6 +1937,7 @@ class CardsCompanion extends UpdateCompanion<Card> {
       if (reps != null) 'reps': reps,
       if (lapses != null) 'lapses': lapses,
       if (state != null) 'state': state,
+      if (learningStep != null) 'learning_step': learningStep,
       if (lastReview != null) 'last_review': lastReview,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
@@ -1907,6 +1957,7 @@ class CardsCompanion extends UpdateCompanion<Card> {
     Value<int>? reps,
     Value<int>? lapses,
     Value<int>? state,
+    Value<int?>? learningStep,
     Value<int?>? lastReview,
     Value<int>? createdAt,
     Value<int>? updatedAt,
@@ -1924,6 +1975,7 @@ class CardsCompanion extends UpdateCompanion<Card> {
       reps: reps ?? this.reps,
       lapses: lapses ?? this.lapses,
       state: state ?? this.state,
+      learningStep: learningStep ?? this.learningStep,
       lastReview: lastReview ?? this.lastReview,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -1969,6 +2021,9 @@ class CardsCompanion extends UpdateCompanion<Card> {
     if (state.present) {
       map['state'] = Variable<int>(state.value);
     }
+    if (learningStep.present) {
+      map['learning_step'] = Variable<int>(learningStep.value);
+    }
     if (lastReview.present) {
       map['last_review'] = Variable<int>(lastReview.value);
     }
@@ -1996,6 +2051,7 @@ class CardsCompanion extends UpdateCompanion<Card> {
           ..write('reps: $reps, ')
           ..write('lapses: $lapses, ')
           ..write('state: $state, ')
+          ..write('learningStep: $learningStep, ')
           ..write('lastReview: $lastReview, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
@@ -3349,6 +3405,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final DecksDao decksDao = DecksDao(this as AppDatabase);
   late final NotesDao notesDao = NotesDao(this as AppDatabase);
   late final CardsDao cardsDao = CardsDao(this as AppDatabase);
+  late final ReviewsDao reviewsDao = ReviewsDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -4001,6 +4058,7 @@ typedef $$CardsTableCreateCompanionBuilder =
       Value<int> reps,
       Value<int> lapses,
       Value<int> state,
+      Value<int?> learningStep,
       Value<int?> lastReview,
       required int createdAt,
       required int updatedAt,
@@ -4019,6 +4077,7 @@ typedef $$CardsTableUpdateCompanionBuilder =
       Value<int> reps,
       Value<int> lapses,
       Value<int> state,
+      Value<int?> learningStep,
       Value<int?> lastReview,
       Value<int> createdAt,
       Value<int> updatedAt,
@@ -4089,6 +4148,11 @@ class $$CardsTableFilterComposer extends Composer<_$AppDatabase, $CardsTable> {
 
   ColumnFilters<int> get state => $composableBuilder(
     column: $table.state,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get learningStep => $composableBuilder(
+    column: $table.learningStep,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4177,6 +4241,11 @@ class $$CardsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get learningStep => $composableBuilder(
+    column: $table.learningStep,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get lastReview => $composableBuilder(
     column: $table.lastReview,
     builder: (column) => ColumnOrderings(column),
@@ -4246,6 +4315,11 @@ class $$CardsTableAnnotationComposer
   GeneratedColumn<int> get state =>
       $composableBuilder(column: $table.state, builder: (column) => column);
 
+  GeneratedColumn<int> get learningStep => $composableBuilder(
+    column: $table.learningStep,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<int> get lastReview => $composableBuilder(
     column: $table.lastReview,
     builder: (column) => column,
@@ -4298,6 +4372,7 @@ class $$CardsTableTableManager
                 Value<int> reps = const Value.absent(),
                 Value<int> lapses = const Value.absent(),
                 Value<int> state = const Value.absent(),
+                Value<int?> learningStep = const Value.absent(),
                 Value<int?> lastReview = const Value.absent(),
                 Value<int> createdAt = const Value.absent(),
                 Value<int> updatedAt = const Value.absent(),
@@ -4314,6 +4389,7 @@ class $$CardsTableTableManager
                 reps: reps,
                 lapses: lapses,
                 state: state,
+                learningStep: learningStep,
                 lastReview: lastReview,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
@@ -4332,6 +4408,7 @@ class $$CardsTableTableManager
                 Value<int> reps = const Value.absent(),
                 Value<int> lapses = const Value.absent(),
                 Value<int> state = const Value.absent(),
+                Value<int?> learningStep = const Value.absent(),
                 Value<int?> lastReview = const Value.absent(),
                 required int createdAt,
                 required int updatedAt,
@@ -4348,6 +4425,7 @@ class $$CardsTableTableManager
                 reps: reps,
                 lapses: lapses,
                 state: state,
+                learningStep: learningStep,
                 lastReview: lastReview,
                 createdAt: createdAt,
                 updatedAt: updatedAt,

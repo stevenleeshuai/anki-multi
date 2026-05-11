@@ -24,6 +24,13 @@ class DeckDetailPage extends ConsumerWidget {
           loading: () => const Text('加载中…'),
           error: (_, __) => const Text('错误'),
         ),
+        actions: [
+          IconButton(
+            tooltip: '复习',
+            icon: const Icon(Icons.school_outlined),
+            onPressed: () => context.push('/decks/$deckId/study'),
+          ),
+        ],
       ),
       body: cardsAsync.when(
         data: (cards) {
